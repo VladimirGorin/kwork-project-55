@@ -16,9 +16,14 @@ class AdsController:
         self.cursor:sqlite3.Cursor = cursor
 
 
-    def get_ads(self, sql, parameters):
+    def get_ads(self, sql, parameters, fetchmethod="one"):
         self.cursor.execute(sql, parameters)
-        ads_data = self.cursor.fetchone()
+
+        if fetchmethod == "one":
+            ads_data = self.cursor.fetchone()
+        elif fetchmethod == "all":
+            ads_data = self.cursor.fetchall()
+
 
         if ads_data:
             return ads_data
@@ -41,5 +46,5 @@ class AdsController:
         self.conn.commit()
 
     def add_ads(self, ads:AdsModel):
-        self.cursor.execute('''INSERT INTO ads (owner_id, link) VALUES (?)''', (ads.owner_id, ads.link))
+        self.cursor.execute('''INSERT INTO ads (owner_id, link) VALUES (?, ?)''', (ads.owner_id, ads.link))
         self.connection.commit()

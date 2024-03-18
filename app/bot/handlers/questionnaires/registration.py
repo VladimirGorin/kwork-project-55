@@ -1,7 +1,6 @@
 from telebot import types
 
 from bot.states import registration_state
-from script.utils.db.models import UserModel
 
 from ..messages import handler_stop_command
 
