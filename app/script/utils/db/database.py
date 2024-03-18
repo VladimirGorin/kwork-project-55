@@ -21,6 +21,8 @@ class Database:
 
     def create_models_controllers(self):
         self.user_controller = UserController(self.connection, self.cursor)
+        self.ads_controller = AdsController(self.connection, self.cursor)
+        self.info_controller = InfoController(self.connection, self.cursor)
 
     def connect(self):
         try:

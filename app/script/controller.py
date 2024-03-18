@@ -81,3 +81,8 @@ class Controller:
                     info_message=self.info_message, send_screenshot=self.send_screenshot)
 
         return user
+    def get_user(self, chat_id: str):
+        user = User(Database=self.database, chat_id=chat_id, info_log=self.info_log,
+                    info_message=self.info_message, send_screenshot=self.send_screenshot)
+
+        return user
