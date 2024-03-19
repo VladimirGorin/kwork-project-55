@@ -2,7 +2,7 @@ from telebot import types
 
 from bot.states import registration_state
 
-from ..messages import handler_stop_command
+from ...utils.stop_handlers import handler_stop_command
 
 from loader import loader as l
 from script.utils.user import UserBrowse
@@ -52,7 +52,6 @@ def ask_password(message: types.Message):
         UserBrowse.control.create_user(registration_phone_number, registration_password)
 
         if UserBrowse.control.login_status:
-            l.bot.clear_step_handler_by_chat_id(chat_id)
             l.bot.register_next_step_handler_by_chat_id(chat_id, ask_code)
 
 

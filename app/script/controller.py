@@ -20,7 +20,7 @@ class Controller:
         self.database = None
         self.database_init()
 
-        self.screenshots = bool(get("TELEGRAM_BOT", "SCREENSHOTS"))
+        self.screenshots = True if get("TELEGRAM_BOT", "SCREENSHOTS") == "True" else False
 
         self.bot:TeleBot = bot
 
@@ -35,8 +35,8 @@ class Controller:
         if status:
             self.database.create_models_controllers()
 
-    def info_message(self, message, chat_id):
-        self.bot.send_message(chat_id, message)
+    def info_message(self, message, chat_id, keyboard = None):
+        self.bot.send_message(chat_id, message, reply_markup=keyboard)
 
     def info_log(self, message):
         print(message)

@@ -10,8 +10,9 @@ from selenium.webdriver.common.keys import Keys
 from script.utils.temp import Temp as t
 from script.utils.paths import Paths as path
 
-import os
-import time
+from bot.keyboards.reply import main_reply_keyboard
+
+import os, time
 
 
 class User:
@@ -114,7 +115,7 @@ class User:
 
             if "personal" in home_url:
                 self.info_message(
-                    message="Авторизация и создание сесси прошла успешно\nТеперь у вас есть доступ к функционалу!\nНачните с установки объявления", chat_id=self.chat_id)
+                    message="Авторизация и создание сесси прошла успешно\nТеперь у вас есть доступ к функционалу!\nНачните с установки настроек", chat_id=self.chat_id, keyboard=main_reply_keyboard)
                 self.browser.quit()
             else:
                 raise Exception(
