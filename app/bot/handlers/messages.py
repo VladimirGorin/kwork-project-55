@@ -16,8 +16,11 @@ from ..utils.control import generate_keyabord, generate_text
 
 from loader import loader as l
 
+start_text = "Привет, это бот для битвы за место\nНажми на кнопку что бы авторизоватся"
+not_auth_text = "Вы не авторизованы!"
 
 def setup_messages_handlers():
+
     @l.bot.message_handler(["start"])
     def handler_start_command(message: types.Message) -> None:
         try:
@@ -33,7 +36,6 @@ def setup_messages_handlers():
             get_user_status = user_controller.get_user_status(chat_id)
             get_user_info_status = info_controller.get_user_info_status(chat_id)
 
-            not_auth_message = "Привет, это бот для битвы за место\nНажми на кнопку что бы авторизоватся"
 
             if not get_user_info_status:
                 info_controller.add_user_info(user_info)
@@ -42,7 +44,7 @@ def setup_messages_handlers():
             if not get_user_status:
                 user_controller.add_user(user)
 
-                l.bot.send_message(chat_id, not_auth_message,
+                l.bot.send_message(chat_id, start_text,
                                    reply_markup=auth_inline_keyboard)
             else:
                 is_auth = user_controller.get_user(
@@ -52,7 +54,7 @@ def setup_messages_handlers():
                     l.bot.send_message(chat_id, "Меню", reply_markup=main_reply_keyboard)
                 else:
                     l.bot.send_message(
-                        chat_id, not_auth_message, reply_markup=auth_inline_keyboard)
+                        chat_id, start_text, reply_markup=auth_inline_keyboard)
 
         except Exception as e:
             l.cr.info_message(f"Ошибка! {e}", chat_id)
@@ -60,6 +62,7 @@ def setup_messages_handlers():
     @l.bot.message_handler(func=lambda message: True)
     def handler_text_messages(message: types.Message):
         try:
+
             text = message.text
             chat_id = message.chat.id
 
@@ -67,6 +70,14 @@ def setup_messages_handlers():
 
             info_controller = l.cr.database.info_controller
             ads_controller = l.cr.database.ads_controller
+            user_controller = l.cr.database.user_controller
+
+            is_auth = user_controller.get_user("SELECT is_auth FROM users WHERE chat_id = ?", (chat_id,))[0]
+
+            if not is_auth:
+                l.bot.send_message(chat_id, not_auth_text, reply_markup=types.ReplyKeyboardRemove())
+                l.bot.send_message(chat_id, start_text, reply_markup=auth_inline_keyboard)
+                return
 
             if text == "Информация":
                 info_str = get(user_info, ads_controller, info_controller)

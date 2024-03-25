@@ -7,8 +7,6 @@ from ...utils.stop_handlers import handler_stop_command
 from loader import loader as l
 from script.utils.user import UserBrowse
 
-control = UserBrowse()
-
 def ask_phone_number(message: types.Message):
     try:
         chat_id = message.chat.id

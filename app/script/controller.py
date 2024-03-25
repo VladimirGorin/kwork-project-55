@@ -20,9 +20,10 @@ class Controller:
         self.database = None
         self.database_init()
 
-        self.screenshots = True if get("TELEGRAM_BOT", "SCREENSHOTS") == "True" else False
+        self.screenshots = True if get(
+            "TELEGRAM_BOT", "SCREENSHOTS") == "True" else False
 
-        self.bot:TeleBot = bot
+        self.bot: TeleBot = bot
 
     def database_init(self):
 
@@ -35,14 +36,14 @@ class Controller:
         if status:
             self.database.create_models_controllers()
 
-    def info_message(self, message, chat_id, keyboard = None):
+    def info_message(self, message, chat_id, keyboard=None):
         self.bot.send_message(chat_id, message, reply_markup=keyboard)
 
     def info_log(self, message):
         print(message)
         self.logger.info(message)
 
-    def send_screenshot(self, browser:Chrome, chat_id):
+    def send_screenshot(self, browser: Chrome, chat_id):
 
         if self.screenshots:
             screenshot = browser.get_screenshot_as_png()
@@ -77,12 +78,7 @@ class Controller:
         return logger
 
     def get_user(self, chat_id: str):
-        user = User(Database=self.database, chat_id=chat_id, info_log=self.info_log,
-                    info_message=self.info_message, send_screenshot=self.send_screenshot)
-
-        return user
-    def get_user(self, chat_id: str):
-        user = User(Database=self.database, chat_id=chat_id, info_log=self.info_log,
+        user = User(Database=self.database, chat_id=chat_id,
                     info_message=self.info_message, send_screenshot=self.send_screenshot)
 
         return user
