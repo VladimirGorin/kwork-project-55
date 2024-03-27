@@ -1,0 +1,12 @@
+[Unit]
+Description=FarpostBot
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/opt/farpost/venv/bin/python3 /opt/farpost/app/run.py
+WorkingDirectory=/opt/farpost/app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
