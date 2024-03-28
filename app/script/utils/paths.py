@@ -17,3 +17,5 @@ class Paths:
     SPINS_CONFRIM_BUTTON_XPATH = "//button[@type='submit']"
 
     SPINS_FIRST_BUY_BUTTON_ID = "serviceSubmit"
+
+    CAPTCHA_INPUT_NAME = "g-recaptcha-response"

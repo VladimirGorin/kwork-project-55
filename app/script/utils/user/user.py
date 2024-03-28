@@ -31,23 +31,32 @@ class User:
         self.chat_id = chat_id
 
         self.login_status = None
+        self.captcha_status = None
 
         self.browser = self.create_browser()
 
     def create_browser(self):
-
         chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument('--window-size=1920,1080')
+
+        user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.94 Chrome/37.0.2062.94 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+
         chrome_options.add_argument("disable-gpu")
         chrome_options.add_argument("disable-infobars")
         chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
 
         full_path = os.path.abspath(f"assets/sessions/{self.chat_id}")
         chrome_options.add_argument(f"user-data-dir={full_path}")
 
         browser = webdriver.Chrome(options=chrome_options)
         browser.maximize_window()
+
+        browser.get(f"https://www.farpost.ru/sign")
+
         return browser
 
     def quit(self):
@@ -225,6 +234,30 @@ class User:
             self.send_screenshot(self.browser, self.chat_id)
             self.browser.quit()
 
+    def captcha_slower(self, captcha, phone_number: str, password: str):
+        try:
+
+            captcha_input = self.browser.find_element(By.NAME, path.CAPTCHA_INPUT_NAME)
+            captcha_input.send_keys(captcha)
+
+            time.sleep(t.sleep)
+            captcha_input.send_keys(Keys.ENTER)
+
+            if "sign" in self.browser.current_url:
+                self.create_user(phone_number, password)
+            else:
+                raise Exception("URl не соответствует sign")
+
+        except Exception as e:
+            self.info_message(
+                message=f"Ошибка! При попытке отправки капчи: {e}", chat_id=self.chat_id)
+
+            self.send_screenshot(self.browser, self.chat_id)
+
+            self.login_status = False
+            self.browser.quit()
+
+
     def create_user(self, phone_number: str, password: str):
         try:
             self.browser.get(f"https://www.farpost.ru/sign")
@@ -262,13 +295,18 @@ class User:
                 message="Авторизация прошла успешна, теперь введите код", chat_id=self.chat_id)
 
         except NoSuchElementException as e:
-            self.info_message(
-                message=f"Ошибка! При попытке создания юзера (Капча?): Элемент не найден", chat_id=self.chat_id)
+            captcha_url = f"{self.browser}&f=1"
 
+            self.browser.get(captcha_url)
+            time.sleep(t.sleep)
+
+            self.info_message(
+                message=f"Ошибка! При попытке создания юзера (Капча)", chat_id=self.chat_id)
             self.send_screenshot(self.browser, self.chat_id)
+            self.info_message(message=f"Введите капчу с скриншота", chat_id=self.chat_id)
 
             self.login_status = False
-            self.browser.quit()
+            self.captcha_status = True
 
         except Exception as e:
             self.info_message(

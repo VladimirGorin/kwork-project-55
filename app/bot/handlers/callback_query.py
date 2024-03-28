@@ -23,6 +23,16 @@ def setup_query_handlers():
             user_controller = l.cr.database.user_controller
             info_controller = l.cr.database.info_controller
 
+            callback_data = query.data
+
+            if callback_data == "new_auth":
+                l.bot.send_message(
+                    chat_id, "Введите номер телефона", reply_markup=stop_reply_keyboard)
+                l.bot.register_next_step_handler_by_chat_id(
+                    chat_id, ask_phone_number)
+
+                return
+
 
             ad_id = ads_state.get_state(chat_id, "control_selected_ad")
             ad_status = ads_controller.get_ads(
@@ -39,15 +49,9 @@ def setup_query_handlers():
 
                 return
 
-            callback_data = query.data
 
-            if callback_data == "new_auth":
-                l.bot.send_message(
-                    chat_id, "Введите номер телефона", reply_markup=stop_reply_keyboard)
-                l.bot.register_next_step_handler_by_chat_id(
-                    chat_id, ask_phone_number)
 
-            elif "control" in callback_data:
+            if "control" in callback_data:
                 ad_id = callback_data.split(":")[1]
                 ad_link = ads_controller.get_ads(
                     '''SELECT link FROM ads WHERE owner_id = ? AND id = ?;''', (chat_id, ad_id,))
